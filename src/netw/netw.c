@@ -21,3 +21,37 @@ void v_cwf_netw_free_c(v_cwf_netw_cmd** v) {
 	free(*v);
 	*v = 0;
 }
+
+int v_cwf_netw_hset_r(v_cwf_netw_hset* hs, v_cwf_netw_cmd* cmd) {
+	return hs->ch(hs, cmd);
+}
+
+void v_cwf_netw_hset_f(v_cwf_netw_hset** hs) {
+	v_cwf_netw_hset *t;
+	for (int i = 0; i < (*hs)->childs_l; i++) {
+		t = (*hs)->childs[i];
+		if (t) {
+			v_cwf_netw_hset_f(&t);
+		}
+	}
+	(*hs)->free(hs);
+}
+
+v_cwf_netw_hset* v_cwf_netw_hset_n_n(v_cwf_netw_ch ch) {
+	v_cwf_netw_hset* t;
+	t = malloc(sizeof(v_cwf_netw_hset));
+	t->parent = t->root = 0;
+	t->childs = 0;
+	t->childs_l = 0;
+	t->type = V_CWF_NETW_HSET_N;
+	t->ch = ch;
+	t->free = v_cwf_netw_hset_n_f;
+	printf("xx->%p\n", t);
+	return t;
+}
+
+void v_cwf_netw_hset_n_f(v_cwf_netw_hset** hs) {
+	free(*hs);
+	*hs = 0;
+}
+

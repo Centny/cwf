@@ -9,6 +9,7 @@
 #define CWF_H_
 
 #include "log/log.h"
+#include "netw/impl/impl.h"
 #include "netw/netw.h"
 
 char* v_cwf_alloc_c(unsigned int l);
