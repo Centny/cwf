@@ -9,10 +9,18 @@
 
 void log_test();
 void netw_test();
+void proc_test();
+
+void testAll() {
+	log_test();
+	netw_test();
+	proc_test();
+}
 
 int main() {
 	log_test();
 	netw_test();
+	proc_test();
 	printf("done...\n");
 	return 0;
 }

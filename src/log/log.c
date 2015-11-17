@@ -56,4 +56,5 @@ void v_cwf_log_print(const char* file, int line, int lvl, const char* fmt,
 	}
 	buf[blen] = 0;
 	vprintf(buf, args);
+	free(buf);
 }
