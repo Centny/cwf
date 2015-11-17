@@ -7,6 +7,9 @@
 
 #ifndef V_CWF_NETW_H_
 #define V_CWF_NETW_H_
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 ssize_t v_cwf_netw_read_w(int fd, void* buf, size_t len);
 /**
@@ -89,4 +92,8 @@ int v_cwf_netw_sck_c_w(v_cwf_netw_sck_c* sck, v_cwf_netw_cmd** cmds, int len);
 int v_cwf_netw_sck_c_writer(v_cwf_netw_hset* hs, void* info,
 		v_cwf_netw_cmd** cmds, int len);
 //
+
+#ifdef __cplusplus
+}
+#endif
 #endif /* V_CWF_NETW_H_ */

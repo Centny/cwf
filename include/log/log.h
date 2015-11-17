@@ -9,6 +9,10 @@
 #define V_CWF_LOC_H_
 #include <stdio.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #define V_CWF_LOG_D 10
 #define V_CWF_LOG_I 20
 #define V_CWF_LOG_W 30
@@ -29,4 +33,7 @@ void v_cwf_log_(const char* file, int line, int lvl, const char* fmt, ...);
 #define v_cwf_log_w(fmt,args...) v_cwf_log_(__FILE__,__LINE__,V_CWF_LOG_W,fmt,args)
 #define v_cwf_log_e(fmt,args...) v_cwf_log_(__FILE__,__LINE__,V_CWF_LOG_E,fmt,args)
 
+#ifdef __cplusplus
+}
+#endif
 #endif /* V_CWF_LOC_H_ */

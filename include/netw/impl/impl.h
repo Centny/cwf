@@ -7,6 +7,9 @@
 
 #ifndef V_CWF_NETW_IMPL_H_
 #define V_CWF_NETW_IMPL_H_
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 #include "../netw.h"
 #include "../../proc/proc.h"
@@ -44,7 +47,7 @@ typedef struct v_cwf_netw_hset_rc {
 	//the executor lock.
 	unsigned int lcks_l;
 	v_cwf_proc_lck* lcks;
-} v_cwf_netw_hset_rc;
+}v_cwf_netw_hset_rc;
 int v_cwf_netw_hset_rc_lck_n(v_cwf_netw_hset_rc* rc);
 int v_cwf_netw_hset_rc_lck_f(v_cwf_netw_hset_rc* rc, int idx);
 int v_cwf_netw_hset_rc_r(v_cwf_netw_hset* hs, v_cwf_netw_cmd* cmd);
@@ -54,4 +57,7 @@ void v_cwf_netw_hset_rc_f(v_cwf_netw_hset** hs);
 int v_cwf_netw_hset_rc_exec(v_cwf_netw_hset* hs, void* info,
 		v_cwf_netw_cmd* cmd, v_cwf_netw_cmd** out);
 
+#ifdef __cplusplus
+}
+#endif
 #endif /* V_CWF_NETW_IMPL_H_ */
