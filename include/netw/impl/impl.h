@@ -5,8 +5,8 @@
  *      Author: vty
  */
 
-#ifndef IMPL_H_
-#define IMPL_H_
+#ifndef V_CWF_NETW_IMPL_H_
+#define V_CWF_NETW_IMPL_H_
 
 #include "../netw.h"
 #include "../../proc/proc.h"
@@ -54,4 +54,4 @@ void v_cwf_netw_hset_rc_f(v_cwf_netw_hset** hs);
 int v_cwf_netw_hset_rc_exec(v_cwf_netw_hset* hs, void* info,
 		v_cwf_netw_cmd* cmd, v_cwf_netw_cmd** out);
 
-#endif /* IMPL_H_ */
+#endif /* V_CWF_NETW_IMPL_H_ */

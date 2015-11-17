@@ -140,7 +140,7 @@ v_cwf_netw_sck_c* v_cwf_netw_sck_c_n(const char* addr, short port,
 }
 
 int v_cwf_netw_sck_c_run(v_cwf_netw_sck_c *sck, int erc) {
-	int code = 0;
+	ssize_t code = 0;
 	int nsd = 0;
 	struct sockaddr_in addr;
 	nsd = socket(AF_INET, SOCK_STREAM, 0);
@@ -154,7 +154,7 @@ int v_cwf_netw_sck_c_run(v_cwf_netw_sck_c *sck, int erc) {
 	if (code < 0) {
 		v_cwf_log_e("<v_cwf_netw_sck_c_r>connect to %s:%d error with code(%d)",
 				sck->addr, sck->port, code);
-		return code;
+		return (int) code;
 	}
 	sck->fd = nsd;
 	v_cwf_log_i("<v_cwf_netw_sck_c_r>connect to %s:%d success with fd(%d)",
@@ -212,7 +212,7 @@ int v_cwf_netw_sck_c_run(v_cwf_netw_sck_c *sck, int erc) {
 	close(nsd);
 	v_cwf_log_i("<v_cwf_netw_sck_c_r>stop connect on fd(%d) for %s:%d",
 			nsd, sck->addr, sck->port);
-	return code;
+	return (int) code;
 }
 
 void v_cwf_netw_sck_c_close(v_cwf_netw_sck_c* sck) {
@@ -248,7 +248,7 @@ v_cwf_netw_cmd* v_cwf_netw_sck_cmd(v_cwf_netw_cmd* mod, v_cwf_netw_cmd** cmds,
 int v_cwf_netw_sck_c_w(v_cwf_netw_sck_c* sck, v_cwf_netw_cmd** cmds, int len) {
 	if (sck->fd) {
 		v_cwf_netw_cmd* cmd = v_cwf_netw_sck_cmd(sck->mod, cmds, len);
-		int code = write(sck->fd, cmd->hb + cmd->off, cmd->len);
+		int code = (int) write(sck->fd, cmd->hb + cmd->off, cmd->len);
 		v_cwf_netw_cmd_f(&cmd);
 		return code;
 	} else {

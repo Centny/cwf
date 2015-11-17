@@ -5,8 +5,8 @@
  *      Author: vty
  */
 
-#ifndef CWF_H_
-#define CWF_H_
+#ifndef V_CWF_H_
+#define V_CWF_H_
 
 #include "log/log.h"
 #include "netw/impl/impl.h"
@@ -16,4 +16,4 @@
 char* v_cwf_alloc_c(unsigned int l);
 void v_cwf_free_c(char** v);
 
-#endif /* CWF_H_ */
+#endif /* V_CWF_H_ */

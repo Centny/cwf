@@ -30,13 +30,13 @@ void v_cwf_log_(const char* file, int line, int lvl, const char* fmt, ...) {
 
 void v_cwf_log_print(const char* file, int line, int lvl, const char* fmt,
 		va_list args) {
-	int clen = strlen(file) + 30 + strlen(fmt);
+	size_t clen = strlen(file) + 30 + strlen(fmt);
 	char *buf = malloc(sizeof(char) * clen);
 	time_t rawtime;
 	struct tm * timeinfo;
 	time(&rawtime);
 	timeinfo = localtime(&rawtime);
-	int blen = strftime(buf, clen, "%Y/%m/%d %H:%M:%S ", timeinfo);
+	size_t blen = strftime(buf, clen, "%Y/%m/%d %H:%M:%S ", timeinfo);
 	switch (lvl) {
 	case V_CWF_LOG_D:
 		blen += sprintf(buf + blen, "%s:%d D %s\n", file, line, fmt);

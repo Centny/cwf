@@ -5,8 +5,8 @@
  *      Author: vty
  */
 
-#ifndef LOC_H_
-#define LOC_H_
+#ifndef V_CWF_LOC_H_
+#define V_CWF_LOC_H_
 #include <stdio.h>
 
 #define V_CWF_LOG_D 10
@@ -29,4 +29,4 @@ void v_cwf_log_(const char* file, int line, int lvl, const char* fmt, ...);
 #define v_cwf_log_w(fmt,args...) v_cwf_log_(__FILE__,__LINE__,V_CWF_LOG_W,fmt,args)
 #define v_cwf_log_e(fmt,args...) v_cwf_log_(__FILE__,__LINE__,V_CWF_LOG_E,fmt,args)
 
-#endif /* LOC_H_ */
+#endif /* V_CWF_LOC_H_ */
