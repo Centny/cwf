@@ -105,17 +105,8 @@ void *impl_obdh_rc_test_r(void *args) {
 int impl_obdh_rc_test_w(v_cwf_netw_hset* hs, void* info, v_cwf_netw_cmd** cmds,
 		int len) {
 	v_cwf_log_i("%s", "impl_obdh_rc_test_w start...");
-	int dlen = 0;
-	for (int i = 0; i < len; i++) {
-		dlen += cmds[i]->len;
-	}
-	v_cwf_log_i("impl_obdh_rc_test_w length->%d...", dlen);
-	v_cwf_netw_cmd* tcmd = v_cwf_netw_cmd_n(dlen);
-	dlen = 0;
-	for (int i = 0; i < len; i++) {
-		memcpy(tcmd->hb+dlen, cmds[i]->hb+cmds[i]->off, cmds[i]->len);
-		dlen += cmds[i]->len;
-	}
+	v_cwf_netw_cmd* tcmd = v_cwf_netw_cmd_join(cmds, len);
+	v_cwf_log_i("impl_obdh_rc_test_w length->%d...", tcmd->len);
 	v_cwf_log_i("impl_obdh_rc_test_w data->%s", cmds[len-1]->hb);
 	void** args = malloc(sizeof(void*) * 2);
 	args[0] = tcmd;
