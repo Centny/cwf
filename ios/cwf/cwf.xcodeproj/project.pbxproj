@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		1739A2AE1BFC1CA100D86BD2 /* im.c in Sources */ = {isa = PBXBuildFile; fileRef = 1739A2AD1BFC1CA100D86BD2 /* im.c */; };
+		1739A2B01BFC1CD200D86BD2 /* im in Resources */ = {isa = PBXBuildFile; fileRef = 1739A2AF1BFC1CD200D86BD2 /* im */; };
+		1739A2B11BFC1CE600D86BD2 /* im in Headers */ = {isa = PBXBuildFile; fileRef = 1739A2AF1BFC1CD200D86BD2 /* im */; settings = {ATTRIBUTES = (Public, ); }; };
 		17C59B2C1BFB1978007EC7A6 /* cwf.c in Sources */ = {isa = PBXBuildFile; fileRef = 17C59B231BFB1978007EC7A6 /* cwf.c */; };
 		17C59B2D1BFB1978007EC7A6 /* log.c in Sources */ = {isa = PBXBuildFile; fileRef = 17C59B251BFB1978007EC7A6 /* log.c */; };
 		17C59B2E1BFB1978007EC7A6 /* impl.c in Sources */ = {isa = PBXBuildFile; fileRef = 17C59B281BFB1978007EC7A6 /* impl.c */; };
@@ -19,6 +22,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		1739A2AD1BFC1CA100D86BD2 /* im.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = im.c; sourceTree = "<group>"; };
+		1739A2AF1BFC1CD200D86BD2 /* im */ = {isa = PBXFileReference; lastKnownFileType = folder; name = im; path = ../../include/im; sourceTree = "<group>"; };
 		17C59B171BFB195E007EC7A6 /* cwf.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = cwf.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		17C59B231BFB1978007EC7A6 /* cwf.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = cwf.c; sourceTree = "<group>"; };
 		17C59B251BFB1978007EC7A6 /* log.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = log.c; sourceTree = "<group>"; };
@@ -42,6 +47,14 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		1739A2AC1BFC1CA100D86BD2 /* im */ = {
+			isa = PBXGroup;
+			children = (
+				1739A2AD1BFC1CA100D86BD2 /* im.c */,
+			);
+			path = im;
+			sourceTree = "<group>";
+		};
 		17C59B0D1BFB195E007EC7A6 = {
 			isa = PBXGroup;
 			children = (
@@ -63,6 +76,7 @@
 			isa = PBXGroup;
 			children = (
 				17C59B231BFB1978007EC7A6 /* cwf.c */,
+				1739A2AC1BFC1CA100D86BD2 /* im */,
 				17C59B241BFB1978007EC7A6 /* log */,
 				17C59B261BFB1978007EC7A6 /* netw */,
 				17C59B2A1BFB1978007EC7A6 /* proc */,
@@ -108,6 +122,7 @@
 			isa = PBXGroup;
 			children = (
 				17C59B431BFB1A4D007EC7A6 /* cwf.h */,
+				1739A2AF1BFC1CD200D86BD2 /* im */,
 				17C59B441BFB1A4D007EC7A6 /* netw */,
 				17C59B451BFB1A4D007EC7A6 /* proc */,
 				17C59B461BFB1A4D007EC7A6 /* log */,
@@ -125,6 +140,7 @@
 				17C59B4B1BFB1A5A007EC7A6 /* netw in Headers */,
 				17C59B4C1BFB1A5A007EC7A6 /* proc in Headers */,
 				17C59B4D1BFB1A5A007EC7A6 /* log in Headers */,
+				1739A2B11BFC1CE600D86BD2 /* im in Headers */,
 				17C59B471BFB1A4D007EC7A6 /* cwf.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -187,6 +203,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1739A2B01BFC1CD200D86BD2 /* im in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -200,6 +217,7 @@
 				17C59B301BFB1978007EC7A6 /* proc.c in Sources */,
 				17C59B2D1BFB1978007EC7A6 /* log.c in Sources */,
 				17C59B2F1BFB1978007EC7A6 /* netw.c in Sources */,
+				1739A2AE1BFC1CA100D86BD2 /* im.c in Sources */,
 				17C59B2E1BFB1978007EC7A6 /* impl.c in Sources */,
 				17C59B2C1BFB1978007EC7A6 /* cwf.c in Sources */,
 			);
@@ -299,13 +317,10 @@
 		17C59B201BFB195E007EC7A6 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = (
-					"$(ARCHS_STANDARD)",
-					x86,
-				);
+				ARCHS = "$(ARCHS_STANDARD)";
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				CONFIGURATION_BUILD_DIR = "$(PROJECT_DIR)/../$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)";
+				CONFIGURATION_BUILD_DIR = "$(BUILD_DIR)/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)";
 				DEFINES_MODULE = YES;
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
@@ -318,20 +333,17 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
 				SKIP_INSTALL = YES;
-				VALID_ARCHS = "arm64 armv7 armv7s x86";
+				VALID_ARCHS = "arm64 armv7 armv7s i386 x64_86";
 			};
 			name = Debug;
 		};
 		17C59B211BFB195E007EC7A6 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = (
-					"$(ARCHS_STANDARD)",
-					x86,
-				);
+				ARCHS = "$(ARCHS_STANDARD)";
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				CONFIGURATION_BUILD_DIR = "$(PROJECT_DIR)/../$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)";
+				CONFIGURATION_BUILD_DIR = "$(BUILD_DIR)/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)";
 				DEFINES_MODULE = YES;
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
@@ -344,7 +356,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
 				SKIP_INSTALL = YES;
-				VALID_ARCHS = "arm64 armv7 armv7s x86";
+				VALID_ARCHS = "arm64 armv7 armv7s i386 x64_86";
 			};
 			name = Release;
 		};

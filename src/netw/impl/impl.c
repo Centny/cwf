@@ -163,8 +163,8 @@ int v_cwf_netw_hset_rc_r(v_cwf_netw_hset* hs, v_cwf_netw_cmd* cmd) {
 	idx = (unsigned int) cmd->hb[cmd->off];
 	idx = idx << 8;
 	idx += (unsigned int) cmd->hb[cmd->off + 1];
-	cmd->off += 2;
-	cmd->len -= 2;
+	cmd->off += 4;//forward for idx(2bit),not used(1bit),mark(1bit)
+	cmd->len -= 4;
 	v_cwf_proc_lck_lock(rc->lck);
 	v_cwf_proc_lck lck = rc->lcks[idx];
 	v_cwf_proc_lck_unlock(rc->lck);
@@ -223,8 +223,8 @@ void v_cwf_netw_hset_rc_f(v_cwf_netw_hset** hs) {
 	*hs = 0;
 }
 
-int v_cwf_netw_hset_rc_exec(v_cwf_netw_hset* hs, void* info,
-		v_cwf_netw_cmd* cmd, v_cwf_netw_cmd** out) {
+int v_cwf_netw_hset_rc_exec(v_cwf_netw_hset* hs, void* info, char mark,
+		v_cwf_netw_cmd** cmds, int len, v_cwf_netw_cmd** out) {
 	v_cwf_netw_hset_rc *rc = (v_cwf_netw_hset_rc*) hs->info;
 	if (rc == 0) {
 		v_cwf_log_e("<v_cwf_netw_hset_rc_exec>%s",
@@ -235,22 +235,38 @@ int v_cwf_netw_hset_rc_exec(v_cwf_netw_hset* hs, void* info,
 	v_cwf_netw_cmd *eid = v_cwf_netw_cmd_n(2);
 	eid->hb[1] = (char) idx;
 	eid->hb[0] = (char) (idx >> 8);
+	v_cwf_netw_cmd* mark_ = v_cwf_netw_cmd_n(2);
+	mark_->hb[0] = 0;
+	mark_->hb[1] = mark;
 	//
 	int code;
-	v_cwf_netw_cmd* cmds[3];
+	v_cwf_netw_cmd** cmds_;
+	int cmds_l = 0;
+	if (rc->pref) {
+		cmds_l = len + 3;
+	} else {
+		cmds_l = len + 2;
+	}
+	cmds_ = malloc(sizeof(v_cwf_netw_cmd) * cmds_l);
 	v_cwf_proc_lck lck = rc->lcks[idx];
 	v_cwf_proc_lck_lock(lck);
+	int cmds_i = 0;
 	if (rc->pref) {
-		cmds[0] = rc->pref;
-		cmds[1] = eid;
-		cmds[2] = cmd;
-		code = rc->writer(hs, info, cmds, 3);
+		cmds_[0] = rc->pref;
+		cmds_[1] = eid;
+		cmds_[2] = mark_;
+		cmds_i = 3;
 	} else {
-		cmds[0] = eid;
-		cmds[1] = cmd;
-		code = rc->writer(hs, info, cmds, 2);
+		cmds_[0] = eid;
+		cmds_[1] = mark_;
+		cmds_i = 2;
 	}
-	if (code != 0) {
+	for (int i = 0; i < len; i++) {
+		cmds_[cmds_i] = cmds[i];
+		cmds_i++;
+	}
+	code = rc->writer(hs, info, cmds_, cmds_l);
+	if (code < 1) {
 		v_cwf_proc_lck_unlock(lck);
 		v_cwf_netw_cmd_f(&eid);
 		v_cwf_netw_hset_rc_lck_f(rc, idx);
@@ -258,7 +274,7 @@ int v_cwf_netw_hset_rc_exec(v_cwf_netw_hset* hs, void* info,
 				code);
 		return code;
 	}
-	code = v_cwf_proc_lck_timed_wait(lck, 10);
+	code = v_cwf_proc_lck_timed_wait(lck, 1000);
 	v_cwf_proc_lck_unlock(lck);
 	if (code == 0) {
 		*out = (v_cwf_netw_cmd*) lck[2];

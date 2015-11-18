@@ -12,10 +12,7 @@
 #include "netw/impl/impl.h"
 #include "netw/netw.h"
 #include "proc/proc.h"
-//
-#ifdef __cplusplus
-#include "im/im.hpp"
-#endif
+#include "im/im.h"
 
 #ifdef __cplusplus
 extern "C" {

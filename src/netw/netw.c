@@ -15,14 +15,15 @@
 #include <unistd.h>
 
 ssize_t v_cwf_netw_read_w(int fd, void* buf, size_t len) {
-	size_t dlen = len;
+	size_t dlen = 0;
 	ssize_t res = 0;
-	while (dlen > 0) {
-		res = read(fd, buf, dlen);
+//    char xxx[1024];
+	while (dlen <len) {
+		res = read(fd, buf+dlen, len-dlen);
 		if (res < 1) {
 			return res;
 		} else {
-			dlen -= res;
+			dlen += res;
 		}
 	}
 	return len;
@@ -85,6 +86,13 @@ void v_cwf_netw_cmd_f(v_cwf_netw_cmd** v) {
 	v_cwf_free_c(&((*v)->hb));
 	free(*v);
 	*v = 0;
+}
+
+void v_cwf_netw_cmd_print(v_cwf_netw_cmd* v) {
+	for (int i = 0; i < v->len; i++) {
+		printf("%d ", (unsigned int) v->hb[v->off + i]);
+	}
+	printf("\n");
 }
 
 int v_cwf_netw_hset_r(v_cwf_netw_hset* hs, v_cwf_netw_cmd* cmd) {
@@ -172,7 +180,7 @@ int v_cwf_netw_sck_c_run(v_cwf_netw_sck_c *sck, int erc) {
 			break;
 		}
 		if (strncmp(head, V_CWF_NETW_SCK_H_MOD, 3) != 0) {
-			head[3] = 0;
+            head[3] = 0;
 			v_cwf_log_e(
 					"<v_cwf_netw_sck_c_r>read data from fd(%d) error->expect head(%s), but(%s)",
 					nsd, V_CWF_NETW_SCK_H_MOD, head);
@@ -228,9 +236,12 @@ void v_cwf_netw_sck_c_f(v_cwf_netw_sck_c** sck) {
 	*sck = 0;
 }
 
-v_cwf_netw_cmd* v_cwf_netw_sck_cmd(v_cwf_netw_cmd* mod, v_cwf_netw_cmd** cmds,
-		int len) {
+v_cwf_netw_cmd* v_cwf_netw_sck_cmd(v_cwf_netw_cmd* mod, v_cwf_netw_cmd* pref,
+		v_cwf_netw_cmd** cmds, int len) {
 	int dlen = 0;
+	if (pref) {
+		dlen += pref->len;
+	}
 	for (int i = 0; i < len; i++) {
 		dlen += cmds[i]->len;
 	}
@@ -239,15 +250,21 @@ v_cwf_netw_cmd* v_cwf_netw_sck_cmd(v_cwf_netw_cmd* mod, v_cwf_netw_cmd** cmds,
 	cmd->hb[mod->len + 1] = (char) dlen;
 	cmd->hb[mod->len] = (char) (dlen >> 8);
 	dlen = mod->len + 2;
+	if (pref) {
+		memcpy(cmd->hb+dlen, pref->hb+pref->off, pref->len);
+		dlen += pref->len;
+	}
 	for (int i = 0; i < len; i++) {
 		memcpy(cmd->hb+dlen, cmds[i]->hb+cmds[i]->off, cmds[i]->len);
 		dlen += cmds[i]->len;
 	}
 	return cmd;
 }
-int v_cwf_netw_sck_c_w(v_cwf_netw_sck_c* sck, v_cwf_netw_cmd** cmds, int len) {
+int v_cwf_netw_sck_c_w(v_cwf_netw_sck_c* sck, v_cwf_netw_cmd* pref,
+		v_cwf_netw_cmd** cmds, int len) {
 	if (sck->fd) {
-		v_cwf_netw_cmd* cmd = v_cwf_netw_sck_cmd(sck->mod, cmds, len);
+		v_cwf_netw_cmd* cmd = v_cwf_netw_sck_cmd(sck->mod, pref, cmds, len);
+//        v_cwf_netw_cmd_print(cmd);
 		int code = (int) write(sck->fd, cmd->hb + cmd->off, cmd->len);
 		v_cwf_netw_cmd_f(&cmd);
 		return code;
@@ -257,6 +274,6 @@ int v_cwf_netw_sck_c_w(v_cwf_netw_sck_c* sck, v_cwf_netw_cmd** cmds, int len) {
 }
 int v_cwf_netw_sck_c_writer(v_cwf_netw_hset* hs, void* info,
 		v_cwf_netw_cmd** cmds, int len) {
-	return v_cwf_netw_sck_c_w((v_cwf_netw_sck_c*) info, cmds, len);
+	return v_cwf_netw_sck_c_w((v_cwf_netw_sck_c*) info, 0, cmds, len);
 }
 

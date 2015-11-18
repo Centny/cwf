@@ -182,7 +182,7 @@ void impl_obdh_rc_test() {
 				hsb1->parent->parent, root);
 		cmd->hb[1] = 'A';
 		cmd->hb[2] = 'A' + i;
-		code = v_cwf_netw_hset_rc_exec(hsb1, 0, cmd, &out);
+		code = v_cwf_netw_hset_rc_exec(hsb1, 0, 0, &cmd, 1, &out);
 		if (code != 0) {
 			v_cwf_log_i("exit code:%d\n", code);
 			exit(code);
@@ -200,7 +200,7 @@ void impl_obdh_rc_test() {
 				hsb2->parent->parent, root);
 		cmd->hb[1] = 'B';
 		cmd->hb[2] = 'A' + i;
-		code = v_cwf_netw_hset_rc_exec(hsb2, 0, cmd, &out);
+		code = v_cwf_netw_hset_rc_exec(hsb2, 0, 0, &cmd, 1, &out);
 		if (code != 0) {
 			v_cwf_log_i("exit code:%d\n", code);
 			exit(code);

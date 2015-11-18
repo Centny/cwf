@@ -35,6 +35,7 @@ v_cwf_netw_cmd* v_cwf_netw_cmd_join_v(v_cwf_netw_cmd* cmd,
 v_cwf_netw_cmd* v_cwf_netw_cmd_join(v_cwf_netw_cmd** cmds, int len);
 //free the command.
 void v_cwf_netw_cmd_f(v_cwf_netw_cmd** v);
+void v_cwf_netw_cmd_print(v_cwf_netw_cmd* v);
 
 /**
  * HSET
@@ -88,7 +89,8 @@ v_cwf_netw_sck_c* v_cwf_netw_sck_c_n(const char* addr, short port,
 int v_cwf_netw_sck_c_run(v_cwf_netw_sck_c *sck, int erc);
 void v_cwf_netw_sck_c_close(v_cwf_netw_sck_c* sck);
 void v_cwf_netw_sck_c_f(v_cwf_netw_sck_c** sck);
-int v_cwf_netw_sck_c_w(v_cwf_netw_sck_c* sck, v_cwf_netw_cmd** cmds, int len);
+int v_cwf_netw_sck_c_w(v_cwf_netw_sck_c* sck, v_cwf_netw_cmd* pref,
+		v_cwf_netw_cmd** cmds, int len);
 int v_cwf_netw_sck_c_writer(v_cwf_netw_hset* hs, void* info,
 		v_cwf_netw_cmd** cmds, int len);
 //

@@ -123,7 +123,7 @@ void v_cwf_netw_sck_c_test() {
 	v_cwf_netw_cmd* cmd = v_cwf_netw_cmd_n2("Vssx", 4);
 	for (int i = 0; i < 50; i++) {
 		cmd->hb[3] = 'A' + (i % 26);
-		v_cwf_netw_sck_c_w(sck, &cmd, 1);
+		v_cwf_netw_sck_c_w(sck, cmd, 0, 0);
 	}
 	sleep(1);
 	close(test_v_cwf_netw_sck_sfd);
