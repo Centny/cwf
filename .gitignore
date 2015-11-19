@@ -28,7 +28,6 @@ m4
 aclocal.m4
 config.guess
 config.log
-autogen.sh
 
 
 *.lo
