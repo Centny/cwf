@@ -23,7 +23,7 @@ typedef struct v_cwf_im v_cwf_im;
 
 typedef int (*v_cwf_im_on_nim)(v_cwf_im*, v_cwf_netw_cmd*);
 
-typedef struct v_cwf_im {
+struct v_cwf_im {
 	void* info;
 	//
 	v_cwf_netw_sck_c* sck;
@@ -36,7 +36,7 @@ typedef struct v_cwf_im {
 	v_cwf_netw_hset* nmr; //MK_NMR
 	v_cwf_netw_cmd* nrc_m;
 	v_cwf_netw_hset* nrc; //MK_NRC
-} v_cwf_im;
+};
 
 v_cwf_im* v_cwf_im_n(const char* addr, short port, v_cwf_im_on_nim nim);
 void v_cwf_im_f(v_cwf_im** im);

@@ -41,10 +41,12 @@ void v_cwf_netw_cmd_print(v_cwf_netw_cmd* v);
  * HSET
  */
 typedef struct v_cwf_netw_hset v_cwf_netw_hset;
+
+
 typedef int (*v_cwf_netw_ch)(v_cwf_netw_hset*, v_cwf_netw_cmd*);
 typedef void (*v_cwf_netw_free)(v_cwf_netw_hset**);
 typedef int (*v_cwf_netw_writer)(v_cwf_netw_hset*, void*, v_cwf_netw_cmd**, int);
-typedef struct v_cwf_netw_hset {
+struct v_cwf_netw_hset {
 	//
 	void* info;
 	//the set type.
@@ -59,7 +61,7 @@ typedef struct v_cwf_netw_hset {
 	v_cwf_netw_hset* parent;
 	unsigned int childs_l;
 	v_cwf_netw_hset** childs;
-} v_cwf_netw_hset;
+};
 int v_cwf_netw_hset_r(v_cwf_netw_hset* hs, v_cwf_netw_cmd* cmd);
 void v_cwf_netw_hset_f(v_cwf_netw_hset** hs);
 
