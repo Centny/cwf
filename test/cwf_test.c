@@ -18,9 +18,9 @@ void testAll() {
 }
 
 int main() {
-//	log_test();
+	log_test();
 	netw_test();
-//	proc_test();
+	proc_test();
 	printf("done...\n");
 	return 0;
 }

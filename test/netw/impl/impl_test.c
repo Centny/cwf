@@ -115,7 +115,7 @@ int impl_obdh_rc_test_w(v_cwf_netw_hset* hs, void* info, v_cwf_netw_cmd** cmds,
 	pthread_create(&t, 0, impl_obdh_rc_test_r, args);
 	pthread_detach(t);
 	v_cwf_log_i("%s", "impl_obdh_rc_test_w done...");
-	return 0;
+	return 10;
 }
 
 void impl_obdh_rc_test() {
@@ -182,14 +182,20 @@ void impl_obdh_rc_test() {
 				hsb1->parent->parent, root);
 		cmd->hb[1] = 'A';
 		cmd->hb[2] = 'A' + i;
+		out = 0;
 		code = v_cwf_netw_hset_rc_exec(hsb1, 0, 0, &cmd, 1, &out);
 		if (code != 0) {
-			v_cwf_log_i("exit code:%d\n", code);
+			v_cwf_log_e("exit code:%d\n", code);
 			exit(code);
+		}
+		if (out == 0) {
+			v_cwf_log_e("%s", "result is null");
+			printf("--->xxx1\n");
+			exit(1);
 		}
 		code = strncmp(cmd->hb, out->hb, out->len);
 		if (code != 0) {
-			v_cwf_log_i("cmp(%s,%s,%d) exit code:%d\n",
+			v_cwf_log_e("cmp(%s,%s,%d) exit code:%d\n",
 					cmd->hb, out->hb, out->len, code);
 			exit(code);
 		}
@@ -202,12 +208,12 @@ void impl_obdh_rc_test() {
 		cmd->hb[2] = 'A' + i;
 		code = v_cwf_netw_hset_rc_exec(hsb2, 0, 0, &cmd, 1, &out);
 		if (code != 0) {
-			v_cwf_log_i("exit code:%d\n", code);
+			v_cwf_log_e("exit code:%d\n", code);
 			exit(code);
 		}
 		code = strncmp(cmd->hb, out->hb, out->len);
 		if (code != 0) {
-			v_cwf_log_i("cmp(%s,%s,%d) exit code:%d\n",
+			v_cwf_log_e("cmp(%s,%s,%d) exit code:%d\n",
 					cmd->hb, out->hb, out->len, code);
 			exit(code);
 		}
@@ -283,10 +289,10 @@ void impl_test_thr() {
 void impl_test() {
 //	while (1) {
 	//	impl_test_thr();
-	v_cwf_netw_hset_rc_n_test();
-	v_cwf_netw_hset_queue_n_test();
-	v_cwf_netw_hset_obdh_n_test();
-	impl_obdh_queue_test();
+//	v_cwf_netw_hset_rc_n_test();
+//	v_cwf_netw_hset_queue_n_test();
+//	v_cwf_netw_hset_obdh_n_test();
+//	impl_obdh_queue_test();
 	impl_obdh_rc_test();
 //	}
 }
