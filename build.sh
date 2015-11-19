@@ -22,4 +22,4 @@ mkdir reports/html
 mkdir reports/xml
 cd src
 gcovr --html --html-details -o ../reports/html/coverage.html -r . -v .
-gcovr --xml -o reports/xml/coverage.xml -r . -v .
+gcovr --xml -o ../reports/xml/coverage.xml -r . -v .
