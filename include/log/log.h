@@ -8,6 +8,7 @@
 #ifndef V_CWF_LOC_H_
 #define V_CWF_LOC_H_
 #include <stdio.h>
+#include <stdarg.h>
 
 #ifdef __cplusplus
 extern "C" {
