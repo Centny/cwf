@@ -11,7 +11,7 @@
 extern "C" {
 #endif
 
-ssize_t v_cwf_netw_read_w(int fd, void* buf, size_t len);
+long v_cwf_netw_read_w(int fd, void* buf, size_t len);
 /**
  * CMD
  */

@@ -14,10 +14,9 @@
 #include <arpa/inet.h>
 #include <unistd.h>
 
-ssize_t v_cwf_netw_read_w(int fd, void* buf, size_t len) {
+long v_cwf_netw_read_w(int fd, void* buf, size_t len) {
 	size_t dlen = 0;
-	ssize_t res = 0;
-//    char xxx[1024];
+	long res = 0;
 	while (dlen <len) {
 		res = read(fd, buf+dlen, len-dlen);
 		if (res < 1) {
@@ -148,7 +147,7 @@ v_cwf_netw_sck_c* v_cwf_netw_sck_c_n(const char* addr, short port,
 }
 
 int v_cwf_netw_sck_c_run(v_cwf_netw_sck_c *sck, int erc) {
-	ssize_t code = 0;
+	long code = 0;
 	int nsd = 0;
 	struct sockaddr_in addr;
 	nsd = socket(AF_INET, SOCK_STREAM, 0);
