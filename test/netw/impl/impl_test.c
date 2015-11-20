@@ -260,14 +260,24 @@ void v_cwf_netw_hset_obdh_n_test() {
 
 void v_cwf_netw_hset_rc_n_test() {
 	v_cwf_netw_hset* hs = v_cwf_netw_hset_rc_n(0, v_cwf_netw_hset_rc_n_test_w,
-			5);
+			3);
 	v_cwf_netw_hset_rc* rc = (v_cwf_netw_hset_rc*) hs->info;
-	int idx1, idx2;
+	int idx1, idx2, idx3;
 	for (int i = 0; i < 10; i++) {
 		idx1 = v_cwf_netw_hset_rc_lck_n(rc);
 		idx2 = v_cwf_netw_hset_rc_lck_n(rc);
+		idx3 = v_cwf_netw_hset_rc_lck_n(rc);
+		if (v_cwf_netw_hset_rc_lck_n(rc) >= 0) {
+			printf("v_cwf_netw_hset_rc_lck_n error...\n");
+			exit(1);
+		}
 		v_cwf_netw_hset_rc_lck_f(rc, idx1);
 		v_cwf_netw_hset_rc_lck_f(rc, idx2);
+		v_cwf_netw_hset_rc_lck_f(rc, idx3);
+		if (v_cwf_netw_hset_rc_lck_f(rc, 2222) >= 0) {
+			printf("v_cwf_netw_hset_rc_lck_n error...\n");
+			exit(1);
+		}
 	}
 	hs->free(&hs);
 	printf("v_cwf_netw_hset_rc_n_test done...\n");
@@ -288,11 +298,11 @@ void impl_test_thr() {
 
 void impl_test() {
 //	while (1) {
-	//	impl_test_thr();
-//	v_cwf_netw_hset_rc_n_test();
-//	v_cwf_netw_hset_queue_n_test();
-//	v_cwf_netw_hset_obdh_n_test();
-//	impl_obdh_queue_test();
+//	impl_test_thr();
+	v_cwf_netw_hset_rc_n_test();
+	v_cwf_netw_hset_queue_n_test();
+	v_cwf_netw_hset_obdh_n_test();
+	impl_obdh_queue_test();
 	impl_obdh_rc_test();
 //	}
 }

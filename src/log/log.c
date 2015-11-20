@@ -24,6 +24,8 @@ void v_cwf_log_(const char* file, int line, int lvl, const char* fmt, ...) {
 		va_start(args, fmt);
 		v_cwf_log_f_(file, line, lvl, fmt, args);
 		va_end(args);
+	} else {
+		printf("v_cwf_log_f_ is not setted\n");
 	}
 }
 

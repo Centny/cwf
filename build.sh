@@ -1,4 +1,5 @@
 #!/bin/bash
+set -e
 find . -name \*.gcno -type f -delete
 find . -name \*.gcda -type f -delete
 rm -rf reports

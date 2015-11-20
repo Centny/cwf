@@ -20,7 +20,7 @@ void v_cwf_log_test() {
 }
 
 void v_cwf_log_test_m() {
-	for (int i = 0; i < 100; i++) {
+	for (int i = 0; i < 10; i++) {
 		v_cwf_log_d("the log->%s->%d", "debug", i);
 		v_cwf_log_i("the log->%s->%d", "info", i);
 		v_cwf_log_w("the log->%s->%d", "warn", i);
