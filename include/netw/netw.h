@@ -42,7 +42,6 @@ void v_cwf_netw_cmd_print(v_cwf_netw_cmd* v);
  */
 typedef struct v_cwf_netw_hset v_cwf_netw_hset;
 
-
 typedef int (*v_cwf_netw_ch)(v_cwf_netw_hset*, v_cwf_netw_cmd*);
 typedef void (*v_cwf_netw_free)(v_cwf_netw_hset**);
 typedef int (*v_cwf_netw_writer)(v_cwf_netw_hset*, void*, v_cwf_netw_cmd**, int);
@@ -77,14 +76,28 @@ void v_cwf_netw_hset_n_f(v_cwf_netw_hset** hs);
  */
 #define V_CWF_NETW_SCK_H_MOD "^~^"
 
-typedef struct v_cwf_netw_sck_c {
+typedef struct v_cwf_netw_sck_c v_cwf_netw_sck_c;
+
+#define V_CWF_NETW_SCK_EVN_RUN 100 //on start run
+#define V_CWF_NETW_SCK_EVN_CON_S 200 //on start connect
+#define V_CWF_NETW_SCK_EVN_CON_D 210 //on connected
+#define V_CWF_NETW_SCK_EVN_LR_S 300 //on loop read start
+#define V_CWF_NETW_SCK_EVN_LR_D 310 //on loop read done
+#define V_CWF_NETW_SCK_EVN_CLOSED 400 //on loop read done
+
+typedef void (*v_cwf_netw_sck_evn_h)(v_cwf_netw_sck_c* sck, int evn, void* arga,
+		void* argb);
+
+struct v_cwf_netw_sck_c {
 	short port;
 	char* addr;
 	v_cwf_netw_hset* hs;
 	//
 	int fd;
 	v_cwf_netw_cmd* mod;
-} v_cwf_netw_sck_c;
+	//
+	v_cwf_netw_sck_evn_h evnh;
+};
 v_cwf_netw_sck_c* v_cwf_netw_sck_c_n(const char* addr, short port,
 		v_cwf_netw_hset* hs);
 //run v_cwf_netw_sck_c. if erc is 0, it will ignore the v_cwf_netw_hset_r result.

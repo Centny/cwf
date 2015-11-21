@@ -109,7 +109,11 @@ void* test_v_cwf_netw_sck_c_r(void* args) {
 	v_cwf_netw_sck_c_run(sck, 1);
 	return 0;
 }
-void v_cwf_netw_sck_c_test() {
+void test_v_cwf_netw_sck_evn_h(v_cwf_netw_sck_c* sck, int evn, void* arga,
+		void* argb) {
+	printf("test_v_cwf_netw_sck_evn_h->%d\n", evn);
+}
+void v_cwf_netw_sck_c_test_(v_cwf_netw_sck_evn_h h) {
 	pthread_t t;
 	pthread_create(&t, 0, test_v_cwf_netw_sck_s, 0);
 	pthread_detach(t);
@@ -117,6 +121,7 @@ void v_cwf_netw_sck_c_test() {
 	printf("xxx->1\n");
 	v_cwf_netw_hset *hs = v_cwf_netw_hset_n_n(v_cwf_netw_hset_n_n_test_ch);
 	v_cwf_netw_sck_c* sck = v_cwf_netw_sck_c_n("127.0.0.1", 15050, hs);
+	sck->evnh = h;
 	pthread_create(&t, 0, test_v_cwf_netw_sck_c_r, sck);
 	pthread_detach(t);
 	sleep(1);
@@ -132,11 +137,16 @@ void v_cwf_netw_sck_c_test() {
 	printf("v_cwf_netw_sck_c_test done...\n");
 }
 
+void v_cwf_netw_sck_c_test() {
+	v_cwf_netw_sck_c_test_(0);
+	v_cwf_netw_sck_c_test_(test_v_cwf_netw_sck_evn_h);
+}
+
 void netw_test() {
 //	while (1) {
-//	v_cwf_netw_cmd_test();
-//	v_cwf_netw_hset_n_n_test();
-//	v_cwf_netw_sck_c_test();
+	v_cwf_netw_cmd_test();
+	v_cwf_netw_hset_n_n_test();
+	v_cwf_netw_sck_c_test();
 	impl_test();
 //	}
 	printf("netw_test done...\n");

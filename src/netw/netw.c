@@ -17,8 +17,8 @@
 long v_cwf_netw_read_w(int fd, void* buf, size_t len) {
 	size_t dlen = 0;
 	long res = 0;
-	while (dlen <len) {
-		res = read(fd, buf+dlen, len-dlen);
+	while (dlen < len) {
+		res = read(fd, buf + dlen, len - dlen);
 		if (res < 1) {
 			return res;
 		} else {
@@ -143,10 +143,14 @@ v_cwf_netw_sck_c* v_cwf_netw_sck_c_n(const char* addr, short port,
 	c->fd = 0;
 	c->mod = v_cwf_netw_cmd_n2(V_CWF_NETW_SCK_H_MOD,
 			strlen(V_CWF_NETW_SCK_H_MOD));
+	c->evnh = 0;
 	return c;
 }
 
 int v_cwf_netw_sck_c_run(v_cwf_netw_sck_c *sck, int erc) {
+	if (sck->evnh) {
+		sck->evnh(sck, V_CWF_NETW_SCK_EVN_RUN, &erc, 0);
+	}
 	long code = 0;
 	int nsd = 0;
 	struct sockaddr_in addr;
@@ -157,7 +161,13 @@ int v_cwf_netw_sck_c_run(v_cwf_netw_sck_c *sck, int erc) {
 	addr.sin_addr.s_addr = inet_addr(sck->addr);
 	v_cwf_log_i("<v_cwf_netw_sck_c_r>start connect to %s:%d",
 			sck->addr, sck->port);
+	if (sck->evnh) {
+		sck->evnh(sck, V_CWF_NETW_SCK_EVN_CON_S, &erc, 0);
+	}
 	code = connect(nsd, (struct sockaddr *) &addr, sizeof(struct sockaddr));
+	if (sck->evnh) {
+		sck->evnh(sck, V_CWF_NETW_SCK_EVN_CON_D, &erc, &code);
+	}
 	if (code < 0) {
 		v_cwf_log_e("<v_cwf_netw_sck_c_r>connect to %s:%d error with code(%d)",
 				sck->addr, sck->port, code);
@@ -169,6 +179,9 @@ int v_cwf_netw_sck_c_run(v_cwf_netw_sck_c *sck, int erc) {
 	int dlen = 0;
 	char head[5];
 	v_cwf_netw_cmd* cmd;
+	if (sck->evnh) {
+		sck->evnh(sck, V_CWF_NETW_SCK_EVN_LR_S, &erc, 0);
+	}
 	while (1) {
 		dlen = 0;
 		code = v_cwf_netw_read_w(nsd, head, 5);
@@ -179,7 +192,7 @@ int v_cwf_netw_sck_c_run(v_cwf_netw_sck_c *sck, int erc) {
 			break;
 		}
 		if (strncmp(head, V_CWF_NETW_SCK_H_MOD, 3) != 0) {
-            head[3] = 0;
+			head[3] = 0;
 			v_cwf_log_e(
 					"<v_cwf_netw_sck_c_r>read data from fd(%d) error->expect head(%s), but(%s)",
 					nsd, V_CWF_NETW_SCK_H_MOD, head);
@@ -216,7 +229,13 @@ int v_cwf_netw_sck_c_run(v_cwf_netw_sck_c *sck, int erc) {
 			break;
 		}
 	}
+	if (sck->evnh) {
+		sck->evnh(sck, V_CWF_NETW_SCK_EVN_LR_D, &erc, 0);
+	}
 	close(nsd);
+	if (sck->evnh) {
+		sck->evnh(sck, V_CWF_NETW_SCK_EVN_CLOSED, &erc, 0);
+	}
 	v_cwf_log_i("<v_cwf_netw_sck_c_r>stop connect on fd(%d) for %s:%d",
 			nsd, sck->addr, sck->port);
 	return (int) code;
