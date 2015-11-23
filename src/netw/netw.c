@@ -164,6 +164,7 @@ int v_cwf_netw_sck_c_run(v_cwf_netw_sck_c *sck, int erc) {
 	if (sck->evnh) {
 		sck->evnh(sck, V_CWF_NETW_SCK_EVN_CON_S, &erc, 0);
 	}
+    sck->fd = nsd;
 	code = connect(nsd, (struct sockaddr *) &addr, sizeof(struct sockaddr));
 	if (sck->evnh) {
 		sck->evnh(sck, V_CWF_NETW_SCK_EVN_CON_D, &erc, &code);
@@ -173,7 +174,6 @@ int v_cwf_netw_sck_c_run(v_cwf_netw_sck_c *sck, int erc) {
 				sck->addr, sck->port, code);
 		return (int) code;
 	}
-	sck->fd = nsd;
 	v_cwf_log_i("<v_cwf_netw_sck_c_r>connect to %s:%d success with fd(%d)",
 			sck->addr, sck->port, nsd);
 	int dlen = 0;
