@@ -44,6 +44,7 @@ v_cwf_im* v_cwf_im_n(const char* addr, short port, v_cwf_im_on_nim nim) {
 	//
 	im->hs = v_cwf_netw_hset_obdh_n(keys, hss, 3);
 	im->sck = v_cwf_netw_sck_c_n(addr, port, im->hs);
+    im->sck->info=im;
 	return im;
 }
 void v_cwf_im_f(v_cwf_im** im) {

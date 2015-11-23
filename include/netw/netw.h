@@ -89,6 +89,8 @@ typedef void (*v_cwf_netw_sck_evn_h)(v_cwf_netw_sck_c* sck, int evn, void* arga,
 		void* argb);
 
 struct v_cwf_netw_sck_c {
+    void* info;
+    //
 	short port;
 	char* addr;
 	v_cwf_netw_hset* hs;
