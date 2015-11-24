@@ -198,9 +198,9 @@ int v_cwf_netw_sck_c_run(v_cwf_netw_sck_c *sck, int erc) {
 					nsd, V_CWF_NETW_SCK_H_MOD, head);
 			continue;
 		}
-		dlen = (unsigned int) head[3];
+		dlen = (unsigned char) head[3];
 		dlen = dlen << 8;
-		dlen += (unsigned int) head[4];
+		dlen += (unsigned char) head[4];
 		if (dlen < 1) {
 			v_cwf_log_e(
 					"<v_cwf_netw_sck_c_r>read data from fd(%d) error->the data length is %d",
