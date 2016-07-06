@@ -133,24 +133,18 @@ void v_cwf_netw_hset_n_f(v_cwf_netw_hset** hs) {
 /**
  * SCK impl
  */
-v_cwf_netw_sck_c* v_cwf_netw_sck_c_n(const char* host, const char* addr, short port,
+v_cwf_netw_sck_c* v_cwf_netw_sck_c_n(const char* addr, const char* port,
 		v_cwf_netw_hset* hs) {
 	v_cwf_netw_sck_c* c = malloc(sizeof(v_cwf_netw_sck_c));
-    c->addr=0;
-    c->host=0;
-    if (host) {
-        c->host = malloc(sizeof(char) * strlen(host) + 1);
-        memcpy(c->host, host, strlen(host));
-        c->host[strlen(host)] = 0;
-    } else if (addr) {
-        c->addr = malloc(sizeof(char) * strlen(addr) + 1);
-        memcpy(c->addr, addr, strlen(addr));
-        c->addr[strlen(addr)] = 0;
-    }else{
-        return 0;
-    }
-    c->addrtype = AF_INET;
-	c->port = port;
+    //
+    c->addr = malloc(sizeof(char) * strlen(addr) + 1);
+    memcpy(c->addr, addr, strlen(addr));
+    c->addr[strlen(addr)] = 0;
+    //
+    c->port = malloc(sizeof(char) * strlen(port) + 1);
+    memcpy(c->port, port, strlen(port));
+    c->port[strlen(port)] = 0;
+    //
 	c->hs = hs;
 	c->fd = 0;
 	c->mod = v_cwf_netw_cmd_n2(V_CWF_NETW_SCK_H_MOD,
@@ -163,47 +157,41 @@ int v_cwf_netw_sck_c_run(v_cwf_netw_sck_c *sck, int erc) {
 	if (sck->evnh) {
 		sck->evnh(sck, V_CWF_NETW_SCK_EVN_RUN, &erc, 0);
 	}
-    if (sck->host) {
-        struct hostent* host = gethostbyname(sck->host);
-        if (host==0) {
-            v_cwf_log_e("<v_cwf_netw_sck_c_r>get host by name(%s) fail", sck->host);
-            if (sck->evnh) {
-                sck->evnh(sck, V_CWF_NETW_SCK_EVN_DNS_ERR, &erc, 0);
-            }
-            return -1;
-        }
-        sck->addrtype = host->h_addrtype;
-        char* addr = inet_ntoa(*((struct in_addr *)host->h_addr_list[0]));
-        sck->addr = malloc(sizeof(char) * strlen(addr) + 1);
-        memcpy(sck->addr, addr, strlen(addr));
-        sck->addr[strlen(addr)] = 0;
-        v_cwf_log_i("<v_cwf_netw_sck_c_r>lookup success by name(%s) to host(%s)", sck->host, sck->addr);
+    int nsd = 0;
+    int code = 0;
+    char buf[64];
+    struct addrinfo hints = {0};
+    hints.ai_flags = AI_PASSIVE;
+    hints.ai_family = AF_UNSPEC; // IPv4 and IPv6 allowed
+    hints.ai_socktype = SOCK_STREAM;
+    hints.ai_protocol = 0;
+    struct addrinfo* addr;
+    code = getaddrinfo(sck->addr, sck->port, &hints, &addr );
+    if (sck->evnh) {
+        sck->evnh(sck, V_CWF_NETW_SCK_EVN_DNS_D, &erc, &code);
     }
-	long code = 0;
-	int nsd = 0;
-	struct sockaddr_in addr;
-	nsd = socket(sck->addrtype, SOCK_STREAM, 0);
-	memset(&addr, 0, sizeof(addr));
-	addr.sin_family = sck->addrtype;
-	addr.sin_port = htons(sck->port);
-	addr.sin_addr.s_addr = inet_addr(sck->addr);
-	v_cwf_log_i("<v_cwf_netw_sck_c_r>start connect to %s:%d",
-			sck->addr, sck->port);
+    if (code!=0) {
+        v_cwf_log_e("<v_cwf_netw_sck_c_r>get addr info by addr(%s),port(%s) fail with code(%d)", sck->addr, sck->port, code);
+        return (int)code;
+    }
+    const char* taddr = inet_ntop(addr->ai_family, &addr->ai_addr, buf, 64);
+    v_cwf_log_i("<v_cwf_netw_sck_c_r>start connect to %s-%s", taddr, sck->port);
+    nsd = socket(addr->ai_family, addr->ai_socktype, addr->ai_protocol);
 	if (sck->evnh) {
 		sck->evnh(sck, V_CWF_NETW_SCK_EVN_CON_S, &erc, 0);
 	}
     sck->fd = nsd;
-	code = connect(nsd, (struct sockaddr *) &addr, sizeof(struct sockaddr));
+	code = connect(nsd, addr->ai_addr, addr->ai_addrlen);
 	if (sck->evnh) {
 		sck->evnh(sck, V_CWF_NETW_SCK_EVN_CON_D, &erc, &code);
 	}
 	if (code < 0) {
-		v_cwf_log_e("<v_cwf_netw_sck_c_r>connect to %s:%d error with code(%d)",
-				sck->addr, sck->port, code);
+		v_cwf_log_e("<v_cwf_netw_sck_c_r>connect to %s-%s error with code(%d)",
+                    taddr, sck->port, code);
 		return (int) code;
 	}
-	v_cwf_log_i("<v_cwf_netw_sck_c_r>connect to %s:%d success with fd(%d)",
-			sck->addr, sck->port, nsd);
+	v_cwf_log_i("<v_cwf_netw_sck_c_r>connect to %s-%s success with fd(%d)",
+			taddr, sck->port, nsd);
 	int dlen = 0;
 	char head[5];
 	v_cwf_netw_cmd* cmd;
@@ -212,8 +200,9 @@ int v_cwf_netw_sck_c_run(v_cwf_netw_sck_c *sck, int erc) {
 	}
 	while (1) {
 		dlen = 0;
-		code = v_cwf_netw_read_w(nsd, head, 5);
-		if (code != 5) {
+		long rlen = v_cwf_netw_read_w(nsd, head, 5);
+		if (rlen != 5) {
+            code=(int)rlen;
 			v_cwf_log_e(
 					"<v_cwf_netw_sck_c_r>read data from fd(%d) error with code(%d)",
 					nsd, code);
@@ -237,8 +226,9 @@ int v_cwf_netw_sck_c_run(v_cwf_netw_sck_c *sck, int erc) {
 		}
 		cmd = v_cwf_netw_cmd_n(dlen);
 		cmd->info = &nsd;
-		code = v_cwf_netw_read_w(nsd, cmd->hb, dlen);
-		if (code < 1) {
+		rlen = v_cwf_netw_read_w(nsd, cmd->hb, dlen);
+		if (rlen < 1) {
+            code=(int)rlen;
 			v_cwf_netw_cmd_f(&cmd);
 			v_cwf_log_e(
 					"<v_cwf_netw_sck_c_r>read data from fd(%d) error with code(%d)",
@@ -261,10 +251,11 @@ int v_cwf_netw_sck_c_run(v_cwf_netw_sck_c *sck, int erc) {
 		sck->evnh(sck, V_CWF_NETW_SCK_EVN_LR_D, &erc, 0);
 	}
 	close(nsd);
+    freeaddrinfo(addr);
 	if (sck->evnh) {
 		sck->evnh(sck, V_CWF_NETW_SCK_EVN_CLOSED, &erc, 0);
 	}
-	v_cwf_log_i("<v_cwf_netw_sck_c_r>stop connect on fd(%d) for %s:%d",
+	v_cwf_log_i("<v_cwf_netw_sck_c_r>stop connect on fd(%d) for %s:%s",
 			nsd, sck->addr, sck->port);
 	return (int) code;
 }
@@ -276,8 +267,8 @@ void v_cwf_netw_sck_c_close(v_cwf_netw_sck_c* sck) {
 }
 
 void v_cwf_netw_sck_c_f(v_cwf_netw_sck_c** sck) {
-    if ((*sck)->host) {
-        free((*sck)->host);
+    if ((*sck)->port) {
+        free((*sck)->port);
     }
     if ((*sck)->addr) {
         free((*sck)->addr);

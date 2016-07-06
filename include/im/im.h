@@ -38,7 +38,7 @@ struct v_cwf_im {
 	v_cwf_netw_hset* nrc; //MK_NRC
 };
 
-v_cwf_im* v_cwf_im_n(const char* host, const char* addr, short port, v_cwf_im_on_nim nim);
+v_cwf_im* v_cwf_im_n(const char* addr, const char* port, v_cwf_im_on_nim nim);
 void v_cwf_im_f(v_cwf_im** im);
 int v_cwf_im_sms(v_cwf_im* im, v_cwf_netw_cmd ** cmds, int len);
 int v_cwf_im_mr(v_cwf_im* im, v_cwf_netw_cmd ** cmds, int len);
