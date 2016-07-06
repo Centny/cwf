@@ -15,7 +15,7 @@ int v_cwf_im_nmr_(v_cwf_netw_hset* hs, v_cwf_netw_cmd* cmd) {
 	return 0;
 }
 
-v_cwf_im* v_cwf_im_n(const char* addr, short port, v_cwf_im_on_nim nim) {
+v_cwf_im* v_cwf_im_n(const char* host, const char* addr, short port, v_cwf_im_on_nim nim) {
 	v_cwf_im* im = malloc(sizeof(v_cwf_im));
 	char keys[3];
 	v_cwf_netw_hset* hss[3];
@@ -43,14 +43,23 @@ v_cwf_im* v_cwf_im_n(const char* addr, short port, v_cwf_im_on_nim nim) {
 	//
 	//
 	im->hs = v_cwf_netw_hset_obdh_n(keys, hss, 3);
-	im->sck = v_cwf_netw_sck_c_n(addr, port, im->hs);
+	im->sck = v_cwf_netw_sck_c_n(host, addr, port, im->hs);
     im->sck->info=im;
 	return im;
 }
 void v_cwf_im_f(v_cwf_im** im) {
-	v_cwf_netw_cmd_f((*im)->nim->info);
-	v_cwf_netw_cmd_f((*im)->nmr->info);
+    //
+	v_cwf_netw_cmd_f(&(*im)->nim_m);
+//    v_cwf_netw_hset_f(&(*im)->nim);
+    //
+	v_cwf_netw_cmd_f(&(*im)->nmr_m);
+//    v_cwf_netw_hset_f(&(*im)->nmr);
+    //
+    v_cwf_netw_cmd_f(&(*im)->nrc_m);
+//    v_cwf_netw_hset_f(&(*im)->nrc);
+    //
 	v_cwf_netw_hset_f(&(*im)->hs);
+    //
 	v_cwf_netw_sck_c_f(&(*im)->sck);
 	free(*im);
 	*im = 0;

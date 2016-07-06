@@ -13,6 +13,7 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <unistd.h>
+#include <netdb.h>
 
 long v_cwf_netw_read_w(int fd, void* buf, size_t len) {
 	size_t dlen = 0;
@@ -132,12 +133,23 @@ void v_cwf_netw_hset_n_f(v_cwf_netw_hset** hs) {
 /**
  * SCK impl
  */
-v_cwf_netw_sck_c* v_cwf_netw_sck_c_n(const char* addr, short port,
+v_cwf_netw_sck_c* v_cwf_netw_sck_c_n(const char* host, const char* addr, short port,
 		v_cwf_netw_hset* hs) {
 	v_cwf_netw_sck_c* c = malloc(sizeof(v_cwf_netw_sck_c));
-	c->addr = malloc(sizeof(char) * strlen(addr) + 1);
-	memcpy(c->addr, addr, strlen(addr));
-	c->addr[strlen(addr)] = 0;
+    c->addr=0;
+    c->host=0;
+    if (host) {
+        c->host = malloc(sizeof(char) * strlen(host) + 1);
+        memcpy(c->host, host, strlen(host));
+        c->host[strlen(host)] = 0;
+    } else if (addr) {
+        c->addr = malloc(sizeof(char) * strlen(addr) + 1);
+        memcpy(c->addr, addr, strlen(addr));
+        c->addr[strlen(addr)] = 0;
+    }else{
+        return 0;
+    }
+    c->addrtype = AF_INET;
 	c->port = port;
 	c->hs = hs;
 	c->fd = 0;
@@ -151,12 +163,28 @@ int v_cwf_netw_sck_c_run(v_cwf_netw_sck_c *sck, int erc) {
 	if (sck->evnh) {
 		sck->evnh(sck, V_CWF_NETW_SCK_EVN_RUN, &erc, 0);
 	}
+    if (sck->host) {
+        struct hostent* host = gethostbyname(sck->host);
+        if (host==0) {
+            v_cwf_log_e("<v_cwf_netw_sck_c_r>get host by name(%s) fail", sck->host);
+            if (sck->evnh) {
+                sck->evnh(sck, V_CWF_NETW_SCK_EVN_DNS_ERR, &erc, 0);
+            }
+            return -1;
+        }
+        sck->addrtype = host->h_addrtype;
+        char* addr = inet_ntoa(*((struct in_addr *)host->h_addr_list[0]));
+        sck->addr = malloc(sizeof(char) * strlen(addr) + 1);
+        memcpy(sck->addr, addr, strlen(addr));
+        sck->addr[strlen(addr)] = 0;
+        v_cwf_log_i("<v_cwf_netw_sck_c_r>lookup success by name(%s) to host(%s)", sck->host, sck->addr);
+    }
 	long code = 0;
 	int nsd = 0;
 	struct sockaddr_in addr;
-	nsd = socket(AF_INET, SOCK_STREAM, 0);
+	nsd = socket(sck->addrtype, SOCK_STREAM, 0);
 	memset(&addr, 0, sizeof(addr));
-	addr.sin_family = AF_INET;
+	addr.sin_family = sck->addrtype;
 	addr.sin_port = htons(sck->port);
 	addr.sin_addr.s_addr = inet_addr(sck->addr);
 	v_cwf_log_i("<v_cwf_netw_sck_c_r>start connect to %s:%d",
@@ -196,7 +224,7 @@ int v_cwf_netw_sck_c_run(v_cwf_netw_sck_c *sck, int erc) {
 			v_cwf_log_e(
 					"<v_cwf_netw_sck_c_r>read data from fd(%d) error->expect head(%s), but(%s)",
 					nsd, V_CWF_NETW_SCK_H_MOD, head);
-			continue;
+            break;
 		}
 		dlen = (unsigned char) head[3];
 		dlen = dlen << 8;
@@ -248,7 +276,12 @@ void v_cwf_netw_sck_c_close(v_cwf_netw_sck_c* sck) {
 }
 
 void v_cwf_netw_sck_c_f(v_cwf_netw_sck_c** sck) {
-	free((*sck)->addr);
+    if ((*sck)->host) {
+        free((*sck)->host);
+    }
+    if ((*sck)->addr) {
+        free((*sck)->addr);
+    }
 	v_cwf_netw_cmd_f(&((*sck)->mod));
 	free(*sck);
 	*sck = 0;

@@ -79,6 +79,7 @@ void v_cwf_netw_hset_n_f(v_cwf_netw_hset** hs);
 typedef struct v_cwf_netw_sck_c v_cwf_netw_sck_c;
 
 #define V_CWF_NETW_SCK_EVN_RUN 100 //on start run
+#define V_CWF_NETW_SCK_EVN_DNS_ERR 110 //on get host by name fail
 #define V_CWF_NETW_SCK_EVN_CON_S 200 //on start connect
 #define V_CWF_NETW_SCK_EVN_CON_D 210 //on connected
 #define V_CWF_NETW_SCK_EVN_LR_S 300 //on loop read start
@@ -93,6 +94,8 @@ struct v_cwf_netw_sck_c {
     //
 	short port;
 	char* addr;
+    char* host;
+    int   addrtype;
 	v_cwf_netw_hset* hs;
 	//
 	int fd;
@@ -100,7 +103,7 @@ struct v_cwf_netw_sck_c {
 	//
 	v_cwf_netw_sck_evn_h evnh;
 };
-v_cwf_netw_sck_c* v_cwf_netw_sck_c_n(const char* addr, short port,
+v_cwf_netw_sck_c* v_cwf_netw_sck_c_n(const char* host, const char* addr, short port,
 		v_cwf_netw_hset* hs);
 //run v_cwf_netw_sck_c. if erc is 0, it will ignore the v_cwf_netw_hset_r result.
 int v_cwf_netw_sck_c_run(v_cwf_netw_sck_c *sck, int erc);
