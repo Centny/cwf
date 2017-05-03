@@ -16,6 +16,9 @@ v_cwf_proc_lck v_cwf_proc_lck_new(int len) {
 	pthread_mutex_init(m, 0);
 	l[0] = m;
 	l[1] = t;
+    for (int i=0; i<len; i++) {
+        l[2+i]=0;
+    }
 	return l;
 }
 int v_cwf_proc_lck_lock(v_cwf_proc_lck l) {

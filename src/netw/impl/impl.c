@@ -14,14 +14,14 @@ int v_cwf_netw_hset_obdh_r(v_cwf_netw_hset* hs, v_cwf_netw_cmd* cmd) {
 	if (t) {
 		cmd->off++;
 		cmd->len--;
-		v_cwf_log_d(
-				"<v_cwf_netw_hset_obdh_r>run v_cwf_netw_ch with key(%d),data(%d)",
-				key, cmd->len);
+//		v_cwf_log_d(
+//				"<v_cwf_netw_hset_obdh_r>run v_cwf_netw_ch with key(%d),data(%d)",
+//				key, cmd->len);
 		return t->ch(t, cmd);
 	} else {
-		v_cwf_log_w(
-				"<v_cwf_netw_hset_obdh_r>receive not registered key(%d) with data(%d)",
-				key, cmd->len);
+//		v_cwf_log_w(
+//				"<v_cwf_netw_hset_obdh_r>receive not registered key(%d) with data(%d)",
+//				key, cmd->len);
 		return -1;
 	}
 }
@@ -170,9 +170,11 @@ int v_cwf_netw_hset_rc_r(v_cwf_netw_hset* hs, v_cwf_netw_cmd* cmd) {
 	v_cwf_proc_lck_unlock(rc->lck);
 	if (lck) {
 		v_cwf_proc_lck_lock(lck);
-		lck[2] = v_cwf_netw_cmd_cp(cmd);
+        v_cwf_netw_cmd* ncmd=v_cwf_netw_cmd_cp(cmd);
+		lck[2] = ncmd;
 		v_cwf_proc_lck_signal(lck);
 		v_cwf_proc_lck_unlock(lck);
+        //v_cwf_netw_cmd_f(&ncmd);
 		v_cwf_log_d(
 				"<v_cwf_netw_hset_rc_r>the command call back success with data(%d),id(%d)",
 				cmd->len, idx);
@@ -236,6 +238,7 @@ int v_cwf_netw_hset_rc_exec(v_cwf_netw_hset* hs, void* info, char mark,
 	eid->hb[1] = (char) idx;
 	eid->hb[0] = (char) (idx >> 8);
 	v_cwf_netw_cmd* mark_ = v_cwf_netw_cmd_n(2);
+    //*out=mark_;
 	mark_->hb[0] = 0;
 	mark_->hb[1] = mark;
 	//
@@ -266,6 +269,8 @@ int v_cwf_netw_hset_rc_exec(v_cwf_netw_hset* hs, void* info, char mark,
 		cmds_i++;
 	}
 	code = rc->writer(hs, info, cmds_, cmds_l);
+    free(cmds_);
+    v_cwf_netw_cmd_f(&mark_);
 	if (code < 1) {
 		v_cwf_proc_lck_unlock(lck);
 		v_cwf_netw_cmd_f(&eid);
@@ -275,10 +280,8 @@ int v_cwf_netw_hset_rc_exec(v_cwf_netw_hset* hs, void* info, char mark,
 		return code;
 	}
 	code = v_cwf_proc_lck_timed_wait(lck, 1000);
+    *out = (v_cwf_netw_cmd*) lck[2];
 	v_cwf_proc_lck_unlock(lck);
-	if (code == 0) {
-		*out = (v_cwf_netw_cmd*) lck[2];
-	}
 	v_cwf_netw_cmd_f(&eid);
 	v_cwf_netw_hset_rc_lck_f(rc, idx);
 	v_cwf_log_d("<v_cwf_netw_hset_rc_exec>execute result code(%d)", code);
